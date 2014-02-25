@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TrainAlert</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="CHECK">check</string>
+    <string name="STOP">Stop</string>
+    <string name="DATA_DISPLAY_HINT">service data display</string>
+
+</resources>
