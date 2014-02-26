@@ -26,8 +26,12 @@ public class TrainCheckerService extends Service {
 			if (CheckerState.started.equals(state)) {
 				updateCount++;
 				handler.postDelayed(start, UPDATE_RATE);
+				notifyStatus();
+			} else {
+				notifyStatus();
+				stopSelf();
 			}
-			notifyStatus();
+			
 		}
 	};
 
@@ -35,6 +39,7 @@ public class TrainCheckerService extends Service {
 	public void onCreate() {
 		this.setState(CheckerState.stopped);
 		this.handler = new Handler();
+		Toast.makeText(this, "service created", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
