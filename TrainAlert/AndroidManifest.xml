@@ -24,13 +24,15 @@
         </activity>
 
         <service android:name="com.icecoreb.trainalert.TrainCheckerService" />
-        
-        <receiver android:name="com.icecoreb.trainalert.TrainCheckUpdateReceiver" >
+
+        <!--
+        receiver android:name="com.icecoreb.trainalert.TrainCheckUpdateReceiver" >
             <intent-filter>
                 <action android:name="com.icecoreb.trainalert.UPDATE" >
                 </action>
             </intent-filter>
-        </receiver>
+        </receiver
+        -->
 
     </application>
 

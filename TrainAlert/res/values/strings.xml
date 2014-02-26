@@ -5,7 +5,8 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="CHECK">check</string>
-    <string name="STOP">Stop</string>
     <string name="DATA_DISPLAY_HINT">service data display</string>
+    <string name="START">Start</string>
+    <string name="STOP">Stop</string>
 
 </resources>

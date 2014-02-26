@@ -9,37 +9,37 @@ import android.widget.Toast;
 public class TrainCheckerService extends Service {
 
 	public static final String SERVICE_STATE = "SERVICE_STATE";
+	public static final String UPDATE_COUNT = "UPDATE COUNT";
 	public static final String SERVICE_COMMAND = "SERVICE_COMMAND";
 	public static final String START = "START";
 	public static final String STOP = "STOP";
+	public static final int UPDATE_RATE = 10000;
 
-	private int status = 10;
+	private int updateCount = 0;
 	private Handler handler;
-	private boolean running;
 
-	Runnable run = new Runnable() {
+	private CheckerState state;
+
+	// runnables to execute actions
+	Runnable start = new Runnable() {
 		public void run() {
-			notifyStatus();
-			if (running) {
-				handler.postDelayed(run, 1000);
+			if (CheckerState.started.equals(state)) {
+				updateCount++;
+				handler.postDelayed(start, UPDATE_RATE);
 			}
-		}
-	};
-
-	Runnable stop = new Runnable() {
-		public void run() {
-			setState(false);
+			notifyStatus();
 		}
 	};
 
 	@Override
 	public void onCreate() {
-		this.running = false;
+		this.setState(CheckerState.stopped);
 		this.handler = new Handler();
 	}
 
 	@Override
 	public void onDestroy() {
+		this.setState(CheckerState.stopped);
 		Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
 	}
 
@@ -51,26 +51,42 @@ public class TrainCheckerService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		this.notifyStatus();
 		String command = intent.getExtras().getString(SERVICE_COMMAND);
-		if(command != null && START.equals(command)) {
-			this.setState(true);
-			this.handler.post(this.run);
+		if (command != null) {
+			if (START.equals(command)) {
+				this.startService();
+			} else if (SERVICE_STATE.equals(command)) {
+				this.notifyStatus();
+			} else {
+				this.stopService();
+			}
 		} else {
-			this.handler.post(this.stop);
+			this.stopService();
 		}
 		return START_NOT_STICKY;
+	}
+
+	private void startService() {
+		if (this.state == null || CheckerState.stopped.equals(this.state)) {
+			this.setState(CheckerState.started);
+			this.handler.post(this.start);
+		}
+	}
+
+	private void stopService() {
+		this.setState(CheckerState.stopped);
 	}
 
 	private void notifyStatus() {
 		Intent updateIntent = new Intent();
 		updateIntent.setAction("com.icecoreb.trainalert.UPDATE");
-		updateIntent.putExtra(SERVICE_STATE,
-				(Integer.valueOf(this.status++)).toString());
+		updateIntent.putExtra(SERVICE_STATE, this.state == null ? "NO STATE"
+				: this.state.toString());
+		updateIntent.putExtra(UPDATE_COUNT, this.updateCount);
 		this.sendBroadcast(updateIntent);
 	}
 
-	private synchronized void setState(boolean state) {
-		this.running = state;
+	private synchronized void setState(CheckerState state) {
+		this.state = state;
 	}
 }

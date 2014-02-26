@@ -8,11 +8,18 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 public class TrainAlertConsoleActivity extends Activity {
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.train_alert_console, menu);
+		return true;
+	}
+
+	// receiver for getting service checker updates
 	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -20,15 +27,7 @@ public class TrainAlertConsoleActivity extends Activity {
 		}
 	};
 
-	private CheckerState state = CheckerState.stopped;
-
-	protected void receiveUpdate(Intent intent) {
-		String serviceStatus = intent.getExtras().getString(
-				TrainCheckerService.SERVICE_STATE);
-		EditText editText = (EditText) this.findViewById(R.id.dataDisplay);
-		editText.setText("estado servicio: [" + serviceStatus + "]");
-	}
-
+	// register and unregister receiver
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -48,46 +47,34 @@ public class TrainAlertConsoleActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_train_alert_console);
-		this.state = CheckerState.stopped;
-		this.setButtonMsg();
+		this.callCheckerService(TrainCheckerService.SERVICE_STATE);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.train_alert_console, menu);
-		return true;
+	protected void receiveUpdate(Intent intent) {
+		String serviceState = intent.getExtras().getString(
+				TrainCheckerService.SERVICE_STATE);
+		int updateCount = intent.getExtras().getInt(
+				TrainCheckerService.UPDATE_COUNT);
+		EditText stateText = (EditText) this.findViewById(R.id.serverStateText);
+		stateText.setText("estado servicio: [" + serviceState + "]");
+		EditText updateCountText = (EditText) this
+				.findViewById(R.id.serverUpdateText);
+		updateCountText.setText(Integer.toString(updateCount));
 	}
 
-	public void switchButtonClick(View view) {
-		this.switchState();
-		this.setButtonMsg();
+	private void callCheckerService(String command) {
 		Intent serviceStartIntent = new Intent(this, TrainCheckerService.class);
 		serviceStartIntent.putExtra(TrainCheckerService.SERVICE_COMMAND,
-				this.getServiceCommand());
+				command);
 		this.startService(serviceStartIntent);
 	}
 
-	private String getServiceCommand() {
-		if (CheckerState.stopped.equals(this.state)) {
-			return TrainCheckerService.START;
-		} else {
-			return TrainCheckerService.STOP;
-		}
+	public void startService(View view) {
+		this.callCheckerService(TrainCheckerService.START);
 	}
 
-	private void switchState() {
-		this.state = this.state.switchState();
-	}
-
-	private Button getButton() {
-		Button button = (Button) this.findViewById(R.id.switchChecker);
-		return button;
-	}
-
-	private void setButtonMsg() {
-		Button button = this.getButton();
-		button.setText(this.state.getStringMessageId());
+	public void stopService(View view) {
+		this.callCheckerService(TrainCheckerService.STOP);
 	}
 
 }

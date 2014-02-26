@@ -9,21 +9,44 @@
     tools:context=".TrainAlertConsoleActivity" >
 
     <Button
-        android:id="@+id/switchChecker"
+        android:id="@+id/startService"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:onClick="switchButtonClick" />
-
-    <EditText
-        android:id="@+id/dataDisplay"
+        android:text="@string/START"
+        android:onClick="startService" />
+    
+    <Button
+        android:id="@+id/stopService"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/switchChecker"
+        android:layout_below="@+id/startService"
+        android:layout_centerHorizontal="true"
+        android:text="@string/STOP"
+        android:onClick="stopService" />
+
+    <EditText
+        android:id="@+id/serverStateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/startService"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="66dp"
         android:ems="10"
         android:hint="@string/DATA_DISPLAY_HINT" />
+
+    <EditText
+        android:id="@+id/serverUpdateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/startService"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="31dp"
+        android:ems="10"
+        android:inputType="number" >
+
+        <requestFocus />
+    </EditText>
 
 </RelativeLayout>
