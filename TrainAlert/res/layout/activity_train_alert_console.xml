@@ -8,34 +8,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".TrainAlertConsoleActivity" >
 
-    <Button
-        android:id="@+id/startService"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/START"
-        android:onClick="startService" />
-    
-    <Button
-        android:id="@+id/stopService"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/startService"
-        android:layout_centerHorizontal="true"
-        android:text="@string/STOP"
-        android:onClick="stopService" />
-
-    <EditText
-        android:id="@+id/serverStateText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/startService"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="66dp"
-        android:ems="10"
-        android:hint="@string/DATA_DISPLAY_HINT" />
-
     <EditText
         android:id="@+id/serverUpdateText"
         android:layout_width="wrap_content"
@@ -44,9 +16,49 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="31dp"
         android:ems="10"
-        android:inputType="number" >
+        android:focusable="false"
+        android:inputType="number" />
 
-        <requestFocus />
-    </EditText>
+    <EditText
+        android:id="@+id/trainsScheduleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/serverStateText"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="textMultiLine" />
+
+    <EditText
+        android:id="@+id/serverStateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/serverUpdateText"
+        android:layout_alignLeft="@+id/trainsScheduleText"
+        android:ems="10"
+        android:focusable="false"
+        android:hint="@string/DATA_DISPLAY_HINT" />
+
+    <Button
+        android:id="@+id/stopService"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/startService"
+        android:layout_alignBottom="@+id/startService"
+        android:layout_toRightOf="@+id/startService"
+        android:onClick="stopService"
+        android:text="@string/STOP" />
+
+    <Button
+        android:id="@+id/startService"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/serverUpdateText"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="44dp"
+        android:layout_marginLeft="36dp"
+        android:onClick="startService"
+        android:text="@string/START" />
 
 </RelativeLayout>

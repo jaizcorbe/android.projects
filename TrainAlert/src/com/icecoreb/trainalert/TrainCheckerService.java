@@ -1,51 +1,77 @@
 package com.icecoreb.trainalert;
 
+import com.icecoreb.http.HttpReader;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
 
 public class TrainCheckerService extends Service {
 
-	public static final String SERVICE_STATE = "SERVICE_STATE";
-	public static final String UPDATE_COUNT = "UPDATE COUNT";
+	public static final String TRAIN_SCHEDULE = "TRAIN_SCHEDULE_DATA";
+	public static final String SERVICE_STATE = "SERVICE_STATE_DATA";
+	public static final String UPDATE_COUNT = "UPDATE COUNT_DATA";
 	public static final String SERVICE_COMMAND = "SERVICE_COMMAND";
-	public static final String START = "START";
-	public static final String STOP = "STOP";
-	public static final int UPDATE_RATE = 10000;
+	public static final int UPDATE_RATE = 5000;
 
+	// multithreading support
+	private Looper looper;
+	private TrainCheckerHandler handler;
+	private HandlerThread thread;
 	private int updateCount = 0;
-	private Handler handler;
-
+	private String trainsSchedule;
 	private CheckerState state;
 
-	// runnables to execute actions
-	Runnable start = new Runnable() {
-		public void run() {
-			if (CheckerState.started.equals(state)) {
-				updateCount++;
-				handler.postDelayed(start, UPDATE_RATE);
-				notifyStatus();
-			} else {
-				notifyStatus();
-				stopSelf();
-			}
-			
+	// Handler that receives messages from the thread
+	private final class TrainCheckerHandler extends Handler {
+		public TrainCheckerHandler(Looper looper) {
+			super(looper);
 		}
-	};
+
+		@Override
+		public void handleMessage(Message msg) {
+
+			int commandValue = msg.arg1;
+			CheckerCommand command = CheckerCommand.fromValue(commandValue);
+			synchronized (this) {
+				command.executeCommand(TrainCheckerService.this);
+			}
+		}
+	}
 
 	@Override
 	public void onCreate() {
 		this.setState(CheckerState.stopped);
-		this.handler = new Handler();
-		Toast.makeText(this, "service created", Toast.LENGTH_SHORT).show();
+		// this.handler = new Handler();
+		this.thread = new HandlerThread("ServiceStartArguments",
+				android.os.Process.THREAD_PRIORITY_BACKGROUND);
+		thread.start();
+		// Get the HandlerThread's Looper and use it for our Handler
+		this.looper = thread.getLooper();
+		if (this.looper != null) {
+			this.handler = new TrainCheckerHandler(this.looper);
+			Toast.makeText(this, "service created", Toast.LENGTH_SHORT).show();
+		} else {
+			Log.e("Train Schedule Checker", "Error thread not initialized");
+			this.stopSelf();
+		}
+
 	}
 
 	@Override
 	public void onDestroy() {
 		this.setState(CheckerState.stopped);
+		if (this.thread != null) {
+			this.thread.quit();
+		}
 		Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+		super.onDestroy();
 	}
 
 	@Override
@@ -56,42 +82,75 @@ public class TrainCheckerService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		String command = intent.getExtras().getString(SERVICE_COMMAND);
-		if (command != null) {
-			if (START.equals(command)) {
-				this.startService();
-			} else if (SERVICE_STATE.equals(command)) {
-				this.notifyStatus();
-			} else {
-				this.stopService();
-			}
-		} else {
-			this.stopService();
-		}
+		int commandValue = intent.getExtras().getInt(SERVICE_COMMAND);
+		this.sendMessage(commandValue, 0);
 		return START_NOT_STICKY;
 	}
 
-	private void startService() {
+	private void sendMessage(int commandValue, int delay) {
+		Message msg = this.handler.obtainMessage();
+		msg.arg1 = commandValue;
+		this.handler.sendMessageDelayed(msg, delay);
+	}
+
+	// command handling methods------------------------------------------
+	public void startService() {
 		if (this.state == null || CheckerState.stopped.equals(this.state)) {
 			this.setState(CheckerState.started);
-			this.handler.post(this.start);
 		}
 	}
 
-	private void stopService() {
+	public void ckeckTrainSchedule() {
+		if (CheckerState.started.equals(state)) {
+			updateCount++;
+			this.retrieveTrainsSchedule();
+			this.sendMessage(CheckerCommand.CHECK_TRAIN_SCHEDULE.getValue(),
+					UPDATE_RATE);
+			this.notifyStatus();
+		} else {
+			this.notifyStatus();
+			this.stopSelf();
+		}
+	}
+
+	public void stopService() {
+		this.trainsSchedule = "No Trains Schedule available";
 		this.setState(CheckerState.stopped);
 	}
 
-	private void notifyStatus() {
+	public void notifyStatus() {
 		Intent updateIntent = new Intent();
 		updateIntent.setAction("com.icecoreb.trainalert.UPDATE");
 		updateIntent.putExtra(SERVICE_STATE, this.state == null ? "NO STATE"
 				: this.state.toString());
 		updateIntent.putExtra(UPDATE_COUNT, this.updateCount);
+		String scheduleContent;
+		if (this.trainsSchedule != null) {
+			scheduleContent = this.trainsSchedule;
+		} else {
+			scheduleContent = "No Trains Schedule available";
+		}
+		updateIntent.putExtra(TRAIN_SCHEDULE, scheduleContent);
 		this.sendBroadcast(updateIntent);
 	}
 
 	private synchronized void setState(CheckerState state) {
 		this.state = state;
 	}
+
+	// --------------------------------------------------------------------
+
+	private void retrieveTrainsSchedule() {
+		HttpReader reader = new HttpReader();
+		try {
+			String content = reader
+					.readUrl("http://trenes.mininterior.gov.ar/v2_pg/arribos/ajax_arribos.php?ramal=5&rnd=mLbJm8Z19IX7Zhka&key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ");
+			this.trainsSchedule = content;
+		} catch (Exception e) {
+			this.trainsSchedule = "error trying to retrieve trains shedule";
+			this.stopService();
+		}
+
+	}
+
 }

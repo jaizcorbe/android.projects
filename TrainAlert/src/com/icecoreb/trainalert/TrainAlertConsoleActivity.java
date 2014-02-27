@@ -47,7 +47,7 @@ public class TrainAlertConsoleActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_train_alert_console);
-		this.callCheckerService(TrainCheckerService.SERVICE_STATE);
+		this.callCheckerService(CheckerCommand.CHECK_STATE);
 	}
 
 	protected void receiveUpdate(Intent intent) {
@@ -55,26 +55,37 @@ public class TrainAlertConsoleActivity extends Activity {
 				TrainCheckerService.SERVICE_STATE);
 		int updateCount = intent.getExtras().getInt(
 				TrainCheckerService.UPDATE_COUNT);
+		String trainsSchedule = intent.getExtras().getString(
+				TrainCheckerService.TRAIN_SCHEDULE);
+		this.updateViews(serviceState, Integer.toString(updateCount),
+				trainsSchedule);
+	}
+
+	private void updateViews(String serviceState, String updateCount,
+			String trainsSchedule) {
 		EditText stateText = (EditText) this.findViewById(R.id.serverStateText);
 		stateText.setText("estado servicio: [" + serviceState + "]");
 		EditText updateCountText = (EditText) this
 				.findViewById(R.id.serverUpdateText);
-		updateCountText.setText(Integer.toString(updateCount));
+		updateCountText.setText(updateCount);
+		EditText trainsScheduleText = (EditText) this
+				.findViewById(R.id.trainsScheduleText);
+		trainsScheduleText.setText(trainsSchedule);
 	}
 
-	private void callCheckerService(String command) {
+	private void callCheckerService(CheckerCommand command) {
 		Intent serviceStartIntent = new Intent(this, TrainCheckerService.class);
 		serviceStartIntent.putExtra(TrainCheckerService.SERVICE_COMMAND,
-				command);
+				command.getValue());
 		this.startService(serviceStartIntent);
 	}
 
 	public void startService(View view) {
-		this.callCheckerService(TrainCheckerService.START);
+		this.callCheckerService(CheckerCommand.START);
 	}
 
 	public void stopService(View view) {
-		this.callCheckerService(TrainCheckerService.STOP);
+		this.callCheckerService(CheckerCommand.STOP);
 	}
 
 }
