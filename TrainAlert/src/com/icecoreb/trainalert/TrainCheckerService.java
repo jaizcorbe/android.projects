@@ -1,6 +1,6 @@
 package com.icecoreb.trainalert;
 
-import com.icecoreb.http.HttpReader;
+import org.json.JSONObject;
 
 import android.app.Service;
 import android.content.Intent;
@@ -12,13 +12,18 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.icecoreb.trainalert.checking.AlertChecker;
+import com.icecoreb.trainalert.checking.TrainAlert;
+import com.icecoreb.trainalert.model.Estacion;
+import com.icecoreb.trainalert.model.Ramal;
+
 public class TrainCheckerService extends Service {
 
 	public static final String TRAIN_SCHEDULE = "TRAIN_SCHEDULE_DATA";
 	public static final String SERVICE_STATE = "SERVICE_STATE_DATA";
 	public static final String UPDATE_COUNT = "UPDATE COUNT_DATA";
 	public static final String SERVICE_COMMAND = "SERVICE_COMMAND";
-	public static final int UPDATE_RATE = 5000;
+	public static final int UPDATE_RATE = 60000;
 
 	// multithreading support
 	private Looper looper;
@@ -141,16 +146,18 @@ public class TrainCheckerService extends Service {
 	// --------------------------------------------------------------------
 
 	private void retrieveTrainsSchedule() {
-		HttpReader reader = new HttpReader();
-		try {
-			String content = reader
-					.readUrl("http://trenes.mininterior.gov.ar/v2_pg/arribos/ajax_arribos.php?ramal=5&rnd=mLbJm8Z19IX7Zhka&key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ");
-			this.trainsSchedule = content;
-		} catch (Exception e) {
-			this.trainsSchedule = "error trying to retrieve trains shedule";
-			this.stopService();
-		}
-
+		TrainAlert alert = new TrainAlert(Estacion.belgrano_c,
+				Ramal.mitre_tigre_a_tigre, 10);
+		AlertChecker checker = new AlertChecker();
+		JSONObject stationSchedule = checker.getStationSchedule(alert);
+		this.trainsSchedule = stationSchedule.toString();
+		// try {
+		// String content = reader
+		// .readUrl("http://trenes.mininterior.gov.ar/v2_pg/arribos/ajax_arribos.php?ramal=5&rnd=mLbJm8Z19IX7Zhka&key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ");
+		// this.trainsSchedule = content;
+		// } catch (Exception e) {
+		// this.trainsSchedule = "error trying to retrieve trains shedule";
+		// this.stopService();
+		// }
 	}
-
 }
