@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -37,7 +38,11 @@ public class AlertChecker {
 				context)
 				.setSmallIcon(R.drawable.ic_launcher)
 				.setContentTitle("Tren Llegando")
-				.setContentText("a estacion: " + alert.getEstacion().toString());
+				.setContentText("a estacion: " + alert.getEstacion().toString())
+		// Vibration
+		.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+		// LED
+		//mBuilder.setLights(Color.RED, 3000, 3000);
 		// // Creates an explicit intent for an Activity in your app
 		// Intent resultIntent = new Intent(this, ResultActivity.class);
 		//
