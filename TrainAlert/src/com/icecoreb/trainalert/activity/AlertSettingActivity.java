@@ -50,14 +50,20 @@ public class AlertSettingActivity extends ListActivity {
 	}
 
 	private void setAlerts() {
-		this.alerts = new TrainAlert[2];
+		this.alerts = new TrainAlert[4];
 		this.alerts[0] = new TrainAlert(Estacion.belgrano_c,
 				Ramal.mitre_tigre_a_tigre, 10);
-		this.alerts[1] = new TrainAlert(Estacion.san_isidro_c,
+		this.alerts[1] = new TrainAlert(Estacion.belgrano_c,
 				Ramal.mitre_tigre_a_retiro, 10);
-		this.alertViews = new String[2];
+		this.alerts[2] = new TrainAlert(Estacion.san_isidro_c,
+				Ramal.mitre_tigre_a_tigre, 10);
+		this.alerts[3] = new TrainAlert(Estacion.san_isidro_c,
+				Ramal.mitre_tigre_a_retiro, 10);
+		this.alertViews = new String[4];
 		this.alertViews[0] = alerts[0].toString();
 		this.alertViews[1] = alerts[1].toString();
+		this.alertViews[2] = alerts[2].toString();
+		this.alertViews[3] = alerts[3].toString();
 	}
 
 	@Override
@@ -86,12 +92,7 @@ public class AlertSettingActivity extends ListActivity {
 
 	private void finishWithResult(TrainAlert alert) {
 		Intent resultIntent = new Intent();
-		resultIntent.putExtra(TrainAlert.TRAIN_ALERT_RAMAL, alert.getRamal()
-				.toString());
-		resultIntent.putExtra(TrainAlert.TRAIN_ALERT_ESTACION, alert
-				.getEstacion().toString());
-		resultIntent.putExtra(TrainAlert.TRAIN_ALERT_MINUTES,
-				alert.getAlertMinutes());
+		resultIntent.putExtras(alert.getBundledData());
 		setResult(RESULT_OK, resultIntent);
 		finish();
 	}

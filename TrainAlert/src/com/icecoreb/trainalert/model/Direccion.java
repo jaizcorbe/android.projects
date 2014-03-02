@@ -2,15 +2,18 @@ package com.icecoreb.trainalert.model;
 
 import org.json.JSONObject;
 
+import com.icecoreb.trainalert.checking.TrainAlert;
+
 public enum Direccion {
+
 	ida {
 		public JSONObject getNextTrains(JSONObject stationInfo) {
 			try {
 				String nombre = stationInfo.getString("nombre");
 				String proximo = stationInfo.getString("minutos_1");
 				JSONObject rta = new JSONObject();
-				rta.put("nombre", nombre);
-				rta.put("proximo", proximo);
+				rta.put(TrainAlert.ESTACION, nombre);
+				rta.put(TrainAlert.PROXIMO, proximo);
 				return rta;
 			} catch (Exception e) {
 				return null;
@@ -23,8 +26,8 @@ public enum Direccion {
 				String nombre = stationInfo.getString("nombre");
 				String proximo = stationInfo.getString("minutos_3");
 				JSONObject rta = new JSONObject();
-				rta.put("nombre", nombre);
-				rta.put("proximo", proximo);
+				rta.put(TrainAlert.ESTACION, nombre);
+				rta.put(TrainAlert.PROXIMO, proximo);
 				return rta;
 			} catch (Exception e) {
 				return null;

@@ -16,8 +16,6 @@ import com.icecoreb.trainalert.CheckerCommand;
 import com.icecoreb.trainalert.CheckerState;
 import com.icecoreb.trainalert.checking.AlertChecker;
 import com.icecoreb.trainalert.checking.TrainAlert;
-import com.icecoreb.trainalert.model.Estacion;
-import com.icecoreb.trainalert.model.Ramal;
 
 public class TrainCheckerService extends Service {
 
@@ -34,6 +32,7 @@ public class TrainCheckerService extends Service {
 	private int updateCount = 0;
 	private String trainsSchedule;
 	private CheckerState state;
+	private TrainAlert alert;
 
 	// Handler that receives messages from the thread
 	private final class TrainCheckerHandler extends Handler {
@@ -89,9 +88,17 @@ public class TrainCheckerService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		this.setTrainAlert(intent);
 		int commandValue = intent.getExtras().getInt(SERVICE_COMMAND);
 		this.sendMessage(commandValue, 0);
 		return START_NOT_STICKY;
+	}
+
+	private void setTrainAlert(Intent intent) {
+		TrainAlert alert = TrainAlert.getTrainAlert(intent.getExtras());
+		if (alert != null) {
+			this.alert = alert;
+		}
 	}
 
 	private void sendMessage(int commandValue, int delay) {
@@ -131,6 +138,7 @@ public class TrainCheckerService extends Service {
 		updateIntent.putExtra(SERVICE_STATE, this.state == null ? "NO STATE"
 				: this.state.toString());
 		updateIntent.putExtra(UPDATE_COUNT, this.updateCount);
+
 		String scheduleContent;
 		if (this.trainsSchedule != null) {
 			scheduleContent = this.trainsSchedule;
@@ -138,6 +146,9 @@ public class TrainCheckerService extends Service {
 			scheduleContent = "No Trains Schedule available";
 		}
 		updateIntent.putExtra(TRAIN_SCHEDULE, scheduleContent);
+		if (this.alert != null) {
+			updateIntent.putExtras(this.alert.getBundledData());
+		}
 		this.sendBroadcast(updateIntent);
 	}
 
@@ -148,10 +159,11 @@ public class TrainCheckerService extends Service {
 	// --------------------------------------------------------------------
 
 	private void retrieveTrainsSchedule() {
-		TrainAlert alert = new TrainAlert(Estacion.belgrano_c,
-				Ramal.mitre_tigre_a_tigre, 10);
+		// TrainAlert alert = new TrainAlert(Estacion.belgrano_c,
+		// Ramal.mitre_tigre_a_tigre, 10);
 		AlertChecker checker = new AlertChecker();
-		JSONObject stationSchedule = checker.getStationSchedule(alert);
+		JSONObject stationSchedule = checker.checkAlert(this.getCurrentAlert(),
+				this);
 		this.trainsSchedule = stationSchedule.toString();
 		// try {
 		// String content = reader
@@ -161,5 +173,12 @@ public class TrainCheckerService extends Service {
 		// this.trainsSchedule = "error trying to retrieve trains shedule";
 		// this.stopService();
 		// }
+	}
+
+	private TrainAlert getCurrentAlert() {
+		if (this.alert != null) {
+			return this.alert;
+		}
+		return TrainAlert.getDefaultAlert();
 	}
 }
