@@ -1,4 +1,4 @@
-package com.icecoreb.trainalert;
+package com.icecoreb.trainalert.service;
 
 import org.json.JSONObject;
 
@@ -12,6 +12,8 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.icecoreb.trainalert.CheckerCommand;
+import com.icecoreb.trainalert.CheckerState;
 import com.icecoreb.trainalert.checking.AlertChecker;
 import com.icecoreb.trainalert.checking.TrainAlert;
 import com.icecoreb.trainalert.model.Estacion;

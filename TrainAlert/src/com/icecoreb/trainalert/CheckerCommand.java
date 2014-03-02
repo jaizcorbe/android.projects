@@ -1,5 +1,7 @@
 package com.icecoreb.trainalert;
 
+import com.icecoreb.trainalert.service.TrainCheckerService;
+
 public enum CheckerCommand {
 	UNDEFINED(0) {
 		public void executeCommand(TrainCheckerService service) {
@@ -38,7 +40,7 @@ public enum CheckerCommand {
 		return this.value;
 	}
 
-	static CheckerCommand fromValue(int value) {
+	public static CheckerCommand fromValue(int value) {
 		for (CheckerCommand command : CheckerCommand.values()) {
 			if (command.value == value) {
 				return command;

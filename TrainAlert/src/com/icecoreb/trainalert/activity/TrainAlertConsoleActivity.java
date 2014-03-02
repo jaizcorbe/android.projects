@@ -1,4 +1,4 @@
-package com.icecoreb.trainalert;
+package com.icecoreb.trainalert.activity;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -10,7 +10,16 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 
+import com.icecoreb.trainalert.CheckerCommand;
+import com.icecoreb.trainalert.R;
+import com.icecoreb.trainalert.checking.TrainAlert;
+import com.icecoreb.trainalert.model.Estacion;
+import com.icecoreb.trainalert.model.Ramal;
+import com.icecoreb.trainalert.service.TrainCheckerService;
+
 public class TrainAlertConsoleActivity extends Activity {
+
+	private TrainAlert alert = null;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -48,6 +57,9 @@ public class TrainAlertConsoleActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_train_alert_console);
 		this.callCheckerService(CheckerCommand.CHECK_STATE);
+
+		this.alert = new TrainAlert(Estacion.belgrano_c,
+				Ramal.mitre_tigre_a_tigre, 10);
 	}
 
 	protected void receiveUpdate(Intent intent) {
@@ -61,6 +73,23 @@ public class TrainAlertConsoleActivity extends Activity {
 				trainsSchedule);
 	}
 
+	/* Called when the second activity's finished */
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		if (resultCode == RESULT_OK) {
+			String ramalString = data.getExtras().getString(
+					TrainAlert.TRAIN_ALERT_RAMAL);
+			String estacionString = data.getExtras().getString(
+					TrainAlert.TRAIN_ALERT_ESTACION);
+			int alertMinutes = data.getExtras().getInt(
+					TrainAlert.TRAIN_ALERT_MINUTES);
+			Ramal ramal = Ramal.valueOf(ramalString);
+			Estacion estacion = Estacion.valueOf(estacionString);
+			this.alert = new TrainAlert(estacion, ramal, alertMinutes);
+			this.updateAlertView();
+		}
+	}
+
 	private void updateViews(String serviceState, String updateCount,
 			String trainsSchedule) {
 		EditText stateText = (EditText) this.findViewById(R.id.serverStateText);
@@ -71,6 +100,12 @@ public class TrainAlertConsoleActivity extends Activity {
 		EditText trainsScheduleText = (EditText) this
 				.findViewById(R.id.trainsScheduleText);
 		trainsScheduleText.setText(trainsSchedule);
+		this.updateAlertView();
+	}
+
+	private void updateAlertView() {
+		EditText alertText = (EditText) this.findViewById(R.id.alertText);
+		alertText.setText(this.alert.toString());
 	}
 
 	private void callCheckerService(CheckerCommand command) {
@@ -86,6 +121,11 @@ public class TrainAlertConsoleActivity extends Activity {
 
 	public void stopService(View view) {
 		this.callCheckerService(CheckerCommand.STOP);
+	}
+
+	public void selectAlert(View view) {
+		Intent intent = new Intent(this, AlertSettingActivity.class);
+		this.startActivityForResult(intent, 0);
 	}
 
 }

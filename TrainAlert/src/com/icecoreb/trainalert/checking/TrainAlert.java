@@ -4,10 +4,15 @@ import com.icecoreb.trainalert.model.Estacion;
 import com.icecoreb.trainalert.model.Ramal;
 
 public class TrainAlert {
+
+	public static final String TRAIN_ALERT_RAMAL = "TRAIN_ALERT_RAMAL";
+	public static final String TRAIN_ALERT_ESTACION = "TRAIN_ALERT_ESTACION";
+	public static final String TRAIN_ALERT_MINUTES = "TRAIN_ALERT_MINUTES";
+
 	private Estacion estacion;
 	private Ramal ramal;
 	private int alertMinutes;
-	
+
 	public TrainAlert(Estacion estacion, Ramal ramal, int alertMinutes) {
 		this.estacion = estacion;
 		this.ramal = ramal;
@@ -36,5 +41,17 @@ public class TrainAlert {
 
 	public void setAlertMinutes(int alertMinutes) {
 		this.alertMinutes = alertMinutes;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer str = new StringBuffer();
+		str.append(this.ramal.toString());
+		str.append("\n");
+		str.append(this.estacion.toString());
+		str.append("\n");
+		str.append(this.alertMinutes);
+		str.append(" mins");
+		return str.toString();
 	}
 }

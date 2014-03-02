@@ -9,22 +9,11 @@
     tools:context=".TrainAlertConsoleActivity" >
 
     <EditText
-        android:id="@+id/serverUpdateText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/startService"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="31dp"
-        android:ems="10"
-        android:focusable="false"
-        android:inputType="number" />
-
-    <EditText
         android:id="@+id/trainsScheduleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/serverStateText"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/alertText"
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:focusable="false"
@@ -41,14 +30,14 @@
         android:hint="@string/DATA_DISPLAY_HINT" />
 
     <Button
-        android:id="@+id/stopService"
+        android:id="@+id/setAlert"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/startService"
-        android:layout_alignBottom="@+id/startService"
-        android:layout_toRightOf="@+id/startService"
-        android:onClick="stopService"
-        android:text="@string/STOP" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:onClick="selectAlert"
+        android:text="@string/SET_ALERT" />
 
     <Button
         android:id="@+id/startService"
@@ -56,9 +45,42 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/serverUpdateText"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="44dp"
-        android:layout_marginLeft="36dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginLeft="16dp"
         android:onClick="startService"
         android:text="@string/START" />
+
+    <Button
+        android:id="@+id/stopService"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/startService"
+        android:layout_alignBottom="@+id/startService"
+        android:layout_alignRight="@+id/setAlert"
+        android:onClick="stopService"
+        android:text="@string/STOP" />
+
+    <EditText
+        android:id="@+id/serverUpdateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/startService"
+        android:layout_alignLeft="@+id/serverStateText"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="number" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/alertText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/setAlert"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:ems="10"
+        android:inputType="textMultiLine" />
 
 </RelativeLayout>

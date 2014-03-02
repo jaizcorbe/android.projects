@@ -8,5 +8,7 @@
     <string name="DATA_DISPLAY_HINT">service data display</string>
     <string name="START">Start</string>
     <string name="STOP">Stop</string>
+    <string name="title_activity_alert_setting">Alert Setting</string>
+    <string name="SET_ALERT">Setear Alerta</string>
 
 </resources>
