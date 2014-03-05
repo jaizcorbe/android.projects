@@ -2,23 +2,30 @@ package com.icecoreb.trainalert.activity;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.icecoreb.trainalert.CheckerCommand;
 import com.icecoreb.trainalert.R;
 import com.icecoreb.trainalert.checking.TrainAlert;
 import com.icecoreb.trainalert.service.TrainCheckerService;
+import com.icecoreb.trainalert.service.TrainCheckerService.TrainCheckerServiceBinder;
 
 public class TrainAlertConsoleActivity extends Activity {
 
 	private TrainAlert alert = null;
 	private TrainAlert defaultAlert = null;
+
+	private TrainCheckerService service;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -58,6 +65,22 @@ public class TrainAlertConsoleActivity extends Activity {
 		setContentView(R.layout.activity_train_alert_console);
 		this.defaultAlert = TrainAlert.getDefaultAlert();
 		this.callCheckerService(CheckerCommand.CHECK_STATE);
+	}
+	
+	@Override
+	protected void onStart () {
+		super.onStart();
+		//TODO check bind flags
+		Intent bindIntent = new Intent(this, TrainCheckerService.class);
+		this.bindService(bindIntent, this.sConnection, Context.BIND_AUTO_CREATE);
+		Toast.makeText(this, "service binded", Toast.LENGTH_SHORT).show();
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		this.unbindService(this.sConnection);
+		Toast.makeText(this, "service unbinded", Toast.LENGTH_SHORT).show();
 	}
 
 	protected void receiveUpdate(Intent intent) {
@@ -122,5 +145,21 @@ public class TrainAlertConsoleActivity extends Activity {
 		Intent intent = new Intent(this, AlertSettingActivity.class);
 		this.startActivityForResult(intent, 0);
 	}
+
+	// service connection define the service binding calbacks------------------
+
+	private ServiceConnection sConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName className,
+				IBinder serviceBinder) {
+			TrainCheckerServiceBinder binder = (TrainCheckerServiceBinder) serviceBinder;
+			TrainAlertConsoleActivity.this.service = binder.getService();
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName className) {
+			TrainAlertConsoleActivity.this.service = null;
+		}
+	};
 
 }
