@@ -58,7 +58,7 @@ public class TrainAlertConsoleActivity extends Activity {
 		this.unregisterReceiver(this.mBroadcastReceiver);
 	}
 
-	// -----------------------------------------------------------------------
+	// -----------------------------------------------------------------------/
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

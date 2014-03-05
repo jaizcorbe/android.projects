@@ -163,7 +163,7 @@ public class TrainCheckerService extends Service {
 		this.state = state;
 	}
 
-	// --------------------------------------------------------------------
+	// --------------------------------------------------------------------/
 
 	private void retrieveTrainsSchedule() {
 		// TrainAlert alert = new TrainAlert(Estacion.belgrano_c,
