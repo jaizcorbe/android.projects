@@ -1,8 +1,12 @@
 package com.icecoreb.trainalert.activity;
 
 import android.app.ListActivity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,16 +14,22 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.icecoreb.trainalert.R;
 import com.icecoreb.trainalert.checking.TrainAlert;
 import com.icecoreb.trainalert.model.Estacion;
 import com.icecoreb.trainalert.model.Ramal;
+import com.icecoreb.trainalert.service.ServiceState;
+import com.icecoreb.trainalert.service.TrainCheckerService;
+import com.icecoreb.trainalert.service.TrainCheckerService.TrainCheckerServiceBinder;
 
 public class AlertSettingActivity extends ListActivity {
 
 	private TrainAlert[] alerts = null;
 	private String[] alertViews = null;
+
+	private TrainCheckerService service;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +38,22 @@ public class AlertSettingActivity extends ListActivity {
 		// Show the Up button in the action bar.
 		// setupActionBar();
 		this.initializeAlertsListView();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		// TODO check bind flags
+		Intent bindIntent = new Intent(this, TrainCheckerService.class);
+		this.bindService(bindIntent, this.sConnection, Context.BIND_AUTO_CREATE);
+		Toast.makeText(this, "service binded", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		this.unbindService(this.sConnection);
+		Toast.makeText(this, "service unbinded", Toast.LENGTH_SHORT).show();
 	}
 
 	private void initializeAlertsListView() {
@@ -91,10 +117,48 @@ public class AlertSettingActivity extends ListActivity {
 	}
 
 	private void finishWithResult(TrainAlert alert) {
-		Intent resultIntent = new Intent();
-		resultIntent.putExtras(alert.getBundledData());
-		setResult(RESULT_OK, resultIntent);
+		// Intent resultIntent = new Intent();
+		// resultIntent.putExtras(alert.getBundledData());
+		// setResult(RESULT_OK, resultIntent);
+		this.getState().setCurrentAlert(alert);
 		finish();
 	}
+
+	// service connection define the service binding calbacks------------------
+
+	protected ServiceState getState() {
+		if (this.service != null && this.service.getState() != null) {
+			return this.service.getState();
+		}
+		return ServiceState.getDefaultState();
+	}
+
+	private ServiceConnection sConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName className,
+				IBinder serviceBinder) {
+			TrainCheckerServiceBinder binder = (TrainCheckerServiceBinder) serviceBinder;
+
+			AlertSettingActivity.this.service = binder.getService();
+			// AlertSettingActivity.this
+			// .receiveUpdate(AlertSettingActivity.this.getState());
+			if (AlertSettingActivity.this.service != null) {
+
+				Toast.makeText(AlertSettingActivity.this,
+						"service initialized in alert setting activity",
+						Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(
+						AlertSettingActivity.this,
+						"service initialized in alert setting activity as null",
+						Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName className) {
+			AlertSettingActivity.this.service = null;
+		}
+	};
 
 }

@@ -14,10 +14,24 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.icecoreb.trainalert.CheckerCommand;
-import com.icecoreb.trainalert.CheckerState;
 import com.icecoreb.trainalert.checking.AlertChecker;
-import com.icecoreb.trainalert.checking.TrainAlert;
 
+/**
+ * It is the service that checks the train schedule data and evaluates the
+ * alerts on that data and throws the notification if it is required
+ * 
+ * This service is started and bound. This means that this service will run
+ * until it is stopped but will rely on the binding mechanism to communicate
+ * with its clients, for starting, stopping, defining its alerts or showing its
+ * state The service is meant to run in the same thread as its clients, but the
+ * work should be performed in another thread. The multi-threading is handled by
+ * the TrainCheckerHandler which receives messages and executes them in the
+ * thread to which it is associated to.
+ * 
+ * @author jaizcorbe
+ * 
+ */
+// TODO investigate foreground service
 public class TrainCheckerService extends Service {
 
 	public static final String TRAIN_SCHEDULE = "TRAIN_SCHEDULE_DATA";
@@ -30,10 +44,8 @@ public class TrainCheckerService extends Service {
 	private Looper looper;
 	private TrainCheckerHandler handler;
 	private HandlerThread thread;
-	private int updateCount = 0;
-	private String trainsSchedule;
-	private CheckerState state;
-	private TrainAlert alert;
+	private final IBinder binder = new TrainCheckerServiceBinder();
+	private ServiceState state;
 
 	public class TrainCheckerServiceBinder extends Binder {
 		public TrainCheckerService getService() {
@@ -60,8 +72,6 @@ public class TrainCheckerService extends Service {
 
 	@Override
 	public void onCreate() {
-		this.setState(CheckerState.stopped);
-		// this.handler = new Handler();
 		this.thread = new HandlerThread("ServiceStartArguments",
 				android.os.Process.THREAD_PRIORITY_BACKGROUND);
 		thread.start();
@@ -79,33 +89,23 @@ public class TrainCheckerService extends Service {
 
 	@Override
 	public void onDestroy() {
-		this.setState(CheckerState.stopped);
 		if (this.thread != null) {
 			this.thread.quit();
 		}
-		Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "service destroyed", Toast.LENGTH_SHORT).show();
 		super.onDestroy();
 	}
 
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
-		return null;
+		return this.binder;
 	}
 
+	// TODO check flags and startId
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		this.setTrainAlert(intent);
-		int commandValue = intent.getExtras().getInt(SERVICE_COMMAND);
-		this.sendMessage(commandValue, 0);
 		return START_NOT_STICKY;
-	}
-
-	private void setTrainAlert(Intent intent) {
-		TrainAlert alert = TrainAlert.getTrainAlert(intent.getExtras());
-		if (alert != null) {
-			this.alert = alert;
-		}
 	}
 
 	private void sendMessage(int commandValue, int delay) {
@@ -114,78 +114,49 @@ public class TrainCheckerService extends Service {
 		this.handler.sendMessageDelayed(msg, delay);
 	}
 
-	// command handling methods------------------------------------------
-	public void startService() {
-		if (this.state == null || CheckerState.stopped.equals(this.state)) {
-			this.setState(CheckerState.started);
-		}
+	// --------------------------------------------------------------------/
+
+	public synchronized ServiceState startService() {
+		this.getState().setRunning(true);
+		this.sendMessage(CheckerCommand.CHECK_TRAIN_SCHEDULE.getValue(), 0);
+		return this.getState();
 	}
 
-	public void ckeckTrainSchedule() {
-		if (CheckerState.started.equals(state)) {
-			updateCount++;
-			this.retrieveTrainsSchedule();
-			this.sendMessage(CheckerCommand.CHECK_TRAIN_SCHEDULE.getValue(),
-					UPDATE_RATE);
-			this.notifyStatus();
-		} else {
-			this.notifyStatus();
-			this.stopSelf();
-		}
+	public synchronized ServiceState stopService() {
+		this.getState().setRunning(false);
+		this.getState().resetUpdateCount();
+		this.getState().setTrainSchedule("No Trains Schedule available");
+		this.handler.removeCallbacksAndMessages(null);
+		return this.getState();
 	}
 
-	public void stopService() {
-		this.trainsSchedule = "No Trains Schedule available";
-		this.setState(CheckerState.stopped);
+	public synchronized void ckeckTrainSchedule() {
+		this.getState().addUpdateCount();
+		this.retrieveTrainsSchedule();
+		this.sendMessage(CheckerCommand.CHECK_TRAIN_SCHEDULE.getValue(),
+				UPDATE_RATE);
 	}
 
-	public void notifyStatus() {
+	public synchronized void notifyStatus() {
 		Intent updateIntent = new Intent();
 		updateIntent.setAction("com.icecoreb.trainalert.UPDATE");
-		updateIntent.putExtra(SERVICE_STATE, this.state == null ? "NO STATE"
-				: this.state.toString());
-		updateIntent.putExtra(UPDATE_COUNT, this.updateCount);
-
-		String scheduleContent;
-		if (this.trainsSchedule != null) {
-			scheduleContent = this.trainsSchedule;
-		} else {
-			scheduleContent = "No Trains Schedule available";
-		}
-		updateIntent.putExtra(TRAIN_SCHEDULE, scheduleContent);
-		if (this.alert != null) {
-			updateIntent.putExtras(this.alert.getBundledData());
-		}
 		this.sendBroadcast(updateIntent);
 	}
 
-	private synchronized void setState(CheckerState state) {
-		this.state = state;
+	public synchronized ServiceState getState() {
+		if (this.state == null) {
+			this.state = ServiceState.getDefaultState();
+		}
+		return this.state;
 	}
 
 	// --------------------------------------------------------------------/
 
 	private void retrieveTrainsSchedule() {
-		// TrainAlert alert = new TrainAlert(Estacion.belgrano_c,
-		// Ramal.mitre_tigre_a_tigre, 10);
 		AlertChecker checker = new AlertChecker();
-		JSONObject stationSchedule = checker.checkAlert(this.getCurrentAlert(),
-				this);
-		this.trainsSchedule = stationSchedule.toString();
-		// try {
-		// String content = reader
-		// .readUrl("http://trenes.mininterior.gov.ar/v2_pg/arribos/ajax_arribos.php?ramal=5&rnd=mLbJm8Z19IX7Zhka&key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ");
-		// this.trainsSchedule = content;
-		// } catch (Exception e) {
-		// this.trainsSchedule = "error trying to retrieve trains shedule";
-		// this.stopService();
-		// }
+		JSONObject stationSchedule = checker.checkAlert(this.getState()
+				.getCurrentAlert(), this);
+		this.getState().setTrainSchedule(stationSchedule.toString());
 	}
 
-	private TrainAlert getCurrentAlert() {
-		if (this.alert != null) {
-			return this.alert;
-		}
-		return TrainAlert.getDefaultAlert();
-	}
 }

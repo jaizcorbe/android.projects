@@ -27,6 +27,7 @@ public enum CheckerCommand {
 	CHECK_TRAIN_SCHEDULE(4) {
 		public void executeCommand(TrainCheckerService service) {
 			service.ckeckTrainSchedule();
+			service.notifyStatus();
 		}
 	};
 
