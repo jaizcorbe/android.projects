@@ -1,7 +1,7 @@
 package com.icecoreb.trainalert;
 
 import com.icecoreb.trainalert.service.TrainCheckerService;
-
+//TODO check to remove unused commands
 public enum CheckerCommand {
 	UNDEFINED(0) {
 		public void executeCommand(TrainCheckerService service) {
