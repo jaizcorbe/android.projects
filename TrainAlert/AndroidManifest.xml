@@ -27,7 +27,7 @@
         </activity>
 
         <service
-            android:name="com.icecoreb.trainalert.service.TrainCheckerService"
+            android:name="com.icecoreb.trainalert.service.ForegroundTrainCheckerService"
             android:exported="false" />
 
         <!--
@@ -36,7 +36,7 @@
                 <action android:name="com.icecoreb.trainalert.UPDATE" >
                 </action>
             </intent-filter>
-        </receiver
+        </receiver
         -->
         <activity
             android:name="com.icecoreb.trainalert.activity.AlertSettingActivity"

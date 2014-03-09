@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.icecoreb.trainalert.R;
+import com.icecoreb.trainalert.service.ForegroundTrainCheckerService;
 import com.icecoreb.trainalert.service.ServiceState;
 import com.icecoreb.trainalert.service.TrainCheckerService;
 import com.icecoreb.trainalert.service.TrainCheckerService.TrainCheckerServiceBinder;
@@ -33,6 +34,8 @@ public class TrainAlertConsoleActivity extends Activity {
 	// register and unregister receiver--------------------------------------
 
 	// receiver for getting service checker updates
+	// TODO check LocalBroadcastManager for sending broadcast intents within my
+	// process
 	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -70,14 +73,15 @@ public class TrainAlertConsoleActivity extends Activity {
 	}
 
 	private void startTrainCheckerService() {
-		Intent serviceStartIntent = new Intent(this, TrainCheckerService.class);
+		Intent serviceStartIntent = new Intent(this,
+				ForegroundTrainCheckerService.class);
 		this.startService(serviceStartIntent);
 	}
 
 	private void stopTrainCheckerService() {
 		if (!this.getState().isRunning()) {
 			Intent serviceStartIntent = new Intent(this,
-					TrainCheckerService.class);
+					ForegroundTrainCheckerService.class);
 			this.stopService(serviceStartIntent);
 		}
 
@@ -87,7 +91,7 @@ public class TrainAlertConsoleActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		// TODO check bind flags
-		Intent bindIntent = new Intent(this, TrainCheckerService.class);
+		Intent bindIntent = new Intent(this, ForegroundTrainCheckerService.class);
 		this.bindService(bindIntent, this.sConnection, Context.BIND_AUTO_CREATE);
 		Toast.makeText(this, "service binded", Toast.LENGTH_SHORT).show();
 	}
