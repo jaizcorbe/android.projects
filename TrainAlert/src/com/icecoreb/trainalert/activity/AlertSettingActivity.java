@@ -20,6 +20,7 @@ import com.icecoreb.trainalert.R;
 import com.icecoreb.trainalert.checking.TrainAlert;
 import com.icecoreb.trainalert.model.Estacion;
 import com.icecoreb.trainalert.model.Ramal;
+import com.icecoreb.trainalert.service.ForegroundTrainCheckerService;
 import com.icecoreb.trainalert.service.ServiceState;
 import com.icecoreb.trainalert.service.TrainCheckerService;
 import com.icecoreb.trainalert.service.TrainCheckerService.TrainCheckerServiceBinder;
@@ -44,7 +45,8 @@ public class AlertSettingActivity extends ListActivity {
 	protected void onStart() {
 		super.onStart();
 		// TODO check bind flags
-		Intent bindIntent = new Intent(this, TrainCheckerService.class);
+		Intent bindIntent = new Intent(this,
+				ForegroundTrainCheckerService.class);
 		this.bindService(bindIntent, this.sConnection, Context.BIND_AUTO_CREATE);
 		Toast.makeText(this, "service binded", Toast.LENGTH_SHORT).show();
 	}
