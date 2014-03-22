@@ -2,7 +2,9 @@ package com.icecoreb.trainalert.service;
 
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.PowerManager;
 
 import com.icecoreb.trainalert.R;
 import com.icecoreb.trainalert.activity.TrainAlertConsoleActivity;
@@ -11,8 +13,26 @@ public class ForegroundTrainCheckerService extends TrainCheckerService {
 
 	final static int ONGOING_NOTIFICATION_ID = 1234;
 
+	private PowerManager.WakeLock wakeLock;
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		//TODO modify tag value
+		this.wakeLock = pm
+				.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "My Tag");
+	}
+
+	@Override
+	public void onDestroy() {
+		this.releaseWakeLock();
+		super.onDestroy();
+	}
+
 	@Override
 	public synchronized ServiceState startService() {
+		this.aquireWakeLock();
 		ServiceState state = super.startService();
 		Notification notification = this.getForegroundNotification();
 		this.startForeground(ONGOING_NOTIFICATION_ID, notification);
@@ -23,7 +43,20 @@ public class ForegroundTrainCheckerService extends TrainCheckerService {
 	public synchronized ServiceState stopService() {
 		ServiceState state = super.stopService();
 		this.stopForeground(true);
+		this.releaseWakeLock();
 		return state;
+	}
+
+	private void aquireWakeLock() {
+		if (this.wakeLock != null && !this.wakeLock.isHeld()) {
+			this.wakeLock.acquire();
+		}
+	}
+
+	private void releaseWakeLock() {
+		if (this.wakeLock != null && this.wakeLock.isHeld()) {
+			this.wakeLock.release();
+		}
 	}
 
 	// TODO check no deprecated notification handling
@@ -40,8 +73,8 @@ public class ForegroundTrainCheckerService extends TrainCheckerService {
 				"Checking Trains", System.currentTimeMillis());
 
 		// This method is deprecated. Use Notification.Builder instead.
-		notice.setLatestEventInfo(this, "Checking Trains", "The service is still running",
-				pendIntent);
+		notice.setLatestEventInfo(this, "Checking Trains",
+				"The service is still running", pendIntent);
 
 		notice.flags |= Notification.FLAG_NO_CLEAR;
 		return notice;

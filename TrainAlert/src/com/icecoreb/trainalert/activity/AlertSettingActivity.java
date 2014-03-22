@@ -45,8 +45,7 @@ public class AlertSettingActivity extends ListActivity {
 	protected void onStart() {
 		super.onStart();
 		// TODO check bind flags
-		Intent bindIntent = new Intent(this,
-				ForegroundTrainCheckerService.class);
+		Intent bindIntent = new Intent(this, ForegroundTrainCheckerService.class);
 		this.bindService(bindIntent, this.sConnection, Context.BIND_AUTO_CREATE);
 		Toast.makeText(this, "service binded", Toast.LENGTH_SHORT).show();
 	}

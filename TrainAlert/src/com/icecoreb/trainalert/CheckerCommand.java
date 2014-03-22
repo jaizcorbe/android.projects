@@ -8,18 +8,18 @@ public enum CheckerCommand {
 			service.stopService();
 		}
 	},
-	START(1) {
+	START(1) {//deprecated
 		public void executeCommand(TrainCheckerService service) {
 			service.startService();
 			service.ckeckTrainSchedule();
 		}
 	},
-	STOP(2) {
+	STOP(2) {//deprecated
 		public void executeCommand(TrainCheckerService service) {
 			service.stopService();
 		}
 	},
-	CHECK_STATE(3) {
+	CHECK_STATE(3) {//deprecated
 		public void executeCommand(TrainCheckerService service) {
 			service.notifyStatus();
 		}

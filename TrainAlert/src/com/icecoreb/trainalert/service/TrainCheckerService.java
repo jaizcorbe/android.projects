@@ -38,14 +38,14 @@ public class TrainCheckerService extends Service {
 	public static final String SERVICE_STATE = "SERVICE_STATE_DATA";
 	public static final String UPDATE_COUNT = "UPDATE COUNT_DATA";
 	public static final String SERVICE_COMMAND = "SERVICE_COMMAND";
-	public static final int UPDATE_RATE = 60000;
+	public static final int UPDATE_RATE = 15000;
 
 	// multithreading support
 	private Looper looper;
 	private TrainCheckerHandler handler;
 	private HandlerThread thread;
 	private final IBinder binder = new TrainCheckerServiceBinder();
-	private ServiceState state;
+	private volatile ServiceState state;
 
 	public class TrainCheckerServiceBinder extends Binder {
 		public TrainCheckerService getService() {
@@ -72,7 +72,7 @@ public class TrainCheckerService extends Service {
 
 	@Override
 	public void onCreate() {
-		this.thread = new HandlerThread("ServiceStartArguments",
+		this.thread = new HandlerThread("AlertCheckerWorkerThread",
 				android.os.Process.THREAD_PRIORITY_BACKGROUND);
 		thread.start();
 		// Get the HandlerThread's Looper and use it for our Handler
@@ -123,9 +123,11 @@ public class TrainCheckerService extends Service {
 	}
 
 	public synchronized ServiceState stopService() {
-		this.getState().setRunning(false);
-		this.getState().resetUpdateCount();
-		this.getState().setTrainSchedule("No Trains Schedule available");
+		synchronized (this.state) {
+			this.getState().setRunning(false);
+			this.getState().resetUpdateCount();
+			this.getState().setTrainSchedule("No Trains Schedule available");
+		}
 		this.handler.removeCallbacksAndMessages(null);
 		return this.getState();
 	}
@@ -137,13 +139,13 @@ public class TrainCheckerService extends Service {
 				UPDATE_RATE);
 	}
 
-	public synchronized void notifyStatus() {
+	public void notifyStatus() {
 		Intent updateIntent = new Intent();
 		updateIntent.setAction("com.icecoreb.trainalert.UPDATE");
 		this.sendBroadcast(updateIntent);
 	}
 
-	public synchronized ServiceState getState() {
+	public ServiceState getState() {
 		if (this.state == null) {
 			this.state = ServiceState.getDefaultState();
 		}
