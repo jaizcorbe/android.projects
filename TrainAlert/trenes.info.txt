@@ -1,0 +1,9 @@
+http://trenes.mininterior.gov.ar/v2_pg/arribos/index.php?ramal=5
+
+select con el id de los ramales = select_trenes_linea en "http://www.mininterior.gov.ar/"
+
+key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ
+key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ
+
+key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ
+http://trenes.mininterior.gov.ar/v2_pg/arribos/ajax_arribos.php?ramal=5&rnd=mLbJm8Z19IX7Zhka&key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ
