@@ -30,16 +30,6 @@
         android:hint="@string/DATA_DISPLAY_HINT" />
 
     <Button
-        android:id="@+id/setAlert"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:onClick="selectAlert"
-        android:text="@string/SET_ALERT" />
-
-    <Button
         android:id="@+id/startService"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -82,5 +72,23 @@
         android:layout_marginTop="15dp"
         android:ems="10"
         android:inputType="textMultiLine" />
+
+    <Button
+        android:id="@+id/storeTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="testStore"
+        android:text="@string/title_activity_store_test" />
+
+    <Button
+        android:id="@+id/setAlert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/storeTest"
+        android:layout_centerHorizontal="true"
+        android:onClick="selectAlert"
+        android:text="@string/SET_ALERT" />
 
 </RelativeLayout>

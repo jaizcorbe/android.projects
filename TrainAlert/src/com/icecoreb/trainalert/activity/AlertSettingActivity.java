@@ -38,6 +38,8 @@ public class AlertSettingActivity extends ListActivity {
 		// setContentView(R.layout.activity_alert_setting);
 		// Show the Up button in the action bar.
 		// setupActionBar();
+//		super.onCreate(savedInstanceState);
+//		setContentView(R.layout.activity_alert_setting);
 		this.initializeAlertsListView();
 	}
 

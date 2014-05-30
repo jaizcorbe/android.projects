@@ -11,7 +11,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-     
 
     <application
         android:allowBackup="true"
@@ -38,7 +37,7 @@
                 <action android:name="com.icecoreb.trainalert.UPDATE" >
                 </action>
             </intent-filter>
-        </receiver
+        </receiver
         -->
         <activity
             android:name="com.icecoreb.trainalert.activity.AlertSettingActivity"
@@ -47,6 +46,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.icecoreb.trainalert.TrainAlertConsoleActivity" />
+        </activity>
+        <activity
+            android:name="com.icecoreb.trainalert.activity.StoreTestActivity"
+            android:label="@string/title_activity_store_test"
+            android:parentActivityName="com.icecoreb.trainalert.activity.TrainAlertConsoleActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.icecoreb.trainalert.activity.TrainAlertConsoleActivity" />
         </activity>
     </application>
 

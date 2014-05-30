@@ -154,6 +154,11 @@ public class TrainAlertConsoleActivity extends Activity {
 		Intent intent = new Intent(this, AlertSettingActivity.class);
 		this.startActivity(intent);
 	}
+	
+	public void testStore(View view) {
+		Intent intent = new Intent(this, StoreTestActivity.class);
+		this.startActivity(intent);
+	}
 
 	// service connection define the service binding calbacks------------------
 

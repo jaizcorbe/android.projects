@@ -1,0 +1,20 @@
+{
+	lines: [
+		{
+			id: Mitre
+			services: 
+			[
+				{
+					from: Retiro
+				 	to: Tigre
+				 	stops: [Retiro, LDeLaTorre, Belgrano, Nuniez, Rivadavia, VteLopez, Olivos, LaLucila, Martinez, Accassuso, SanIsidro, Beccar, Victoria, Virreyes, SanFernando, Carupa, Tigre]
+				},
+				{
+					from: Tigre
+					to: Retiro
+					stations:[Tigre, Carupa, SanFernando, Virreyes, Victoria, Beccar, SanIsidro, Accassuso, Martinez, LaLucila, Olivos, VteLopez, Rivadavia, Nuniez, Belgrano, LDeLaTorre, Retiro]
+				}
+			]
+		}
+	]
+}

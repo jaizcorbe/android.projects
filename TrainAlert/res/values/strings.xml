@@ -10,5 +10,7 @@
     <string name="STOP">Stop</string>
     <string name="title_activity_alert_setting">Alert Setting</string>
     <string name="SET_ALERT">Setear Alerta</string>
+    <string name="title_activity_store_test">Store Test</string>
+    <string name="store_test_button">do something</string>
 
 </resources>
