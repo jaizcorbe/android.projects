@@ -1,11 +1,17 @@
 package com.icecoreb.trainalert.activity;
 
+import java.util.List;
+
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.icecoreb.trainalert.R;
+import com.icecoreb.trainalert.store.TrainAlertDataStore;
 
 public class StoreTestActivity extends Activity {
 
@@ -24,6 +30,14 @@ public class StoreTestActivity extends Activity {
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		TextView textView = (TextView) this.findViewById(R.id.linesData);
+		String fileContent = this.loadTrainLinesData();
+		textView.setText(fileContent);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
@@ -35,5 +49,9 @@ public class StoreTestActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	private String loadTrainLinesData() {
+		List<JSONObject> trainLinesData = (new TrainAlertDataStore(this)).getTrainLines();
+		return trainLinesData.isEmpty() ? "no data" : trainLinesData.get(0).toString();
+	}
 
 }

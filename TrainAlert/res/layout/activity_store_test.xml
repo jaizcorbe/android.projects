@@ -9,22 +9,55 @@
     tools:context=".StoreTestActivity" >
 
     <EditText
-        android:id="@+id/storeTest"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/storeButton"
-        android:layout_centerHorizontal="true"
-        android:ems="10"
-        android:inputType="textMultiLine" >
-        <requestFocus />
-    </EditText>
-
-    <Button
-        android:id="@+id/storeButton"
+        android:id="@+id/alertsOutput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/store_test_button" />
+        android:layout_marginBottom="58dp"
+        android:ems="10"
+        android:inputType="textMultiLine" />
+
+    <EditText
+        android:id="@+id/linesData"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_alignLeft="@+id/alertsInput"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:inputType="textMultiLine" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/showData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/alertsOutput"
+        android:layout_alignRight="@+id/alertsOutput"
+        android:layout_marginBottom="14dp"
+        android:onClick="showData"
+        android:text="@string/show_data_button" />
+
+    <Button
+        android:id="@+id/saveData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/showData"
+        android:layout_alignBottom="@+id/showData"
+        android:layout_alignLeft="@+id/alertsOutput"
+        android:onClick="saveData"
+        android:text="@string/save_data_button" />
+
+    <EditText
+        android:id="@+id/alertsInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/saveData"
+        android:layout_centerVertical="true"
+        android:ems="10"
+        android:hint="@string/alerts_hint" />
 
 </RelativeLayout>

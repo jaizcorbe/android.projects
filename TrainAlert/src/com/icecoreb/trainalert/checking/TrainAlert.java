@@ -1,5 +1,10 @@
 package com.icecoreb.trainalert.checking;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONTokener;
+
 import android.os.Bundle;
 
 import com.icecoreb.trainalert.model.Estacion;
@@ -10,8 +15,10 @@ public class TrainAlert {
 	public static final String TRAIN_ALERT_RAMAL = "TRAIN_ALERT_RAMAL";
 	public static final String TRAIN_ALERT_ESTACION = "TRAIN_ALERT_ESTACION";
 	public static final String TRAIN_ALERT_MINUTES = "TRAIN_ALERT_MINUTES";
-	
+
 	public static final String ESTACION = "Estacion";
+	public static final String RAMAL = "Ramal";
+	public static final String ALERT_MINUTES = "ALERT_MINUTES";
 	public static final String PROXIMO = "Proximo";
 
 	private Estacion estacion;
@@ -28,6 +35,11 @@ public class TrainAlert {
 		this.estacion = Estacion.valueOf(estacion);
 		this.ramal = Ramal.valueOf(ramal);
 		this.alertMinutes = alertMinutes;
+	}
+
+	public TrainAlert(JSONObject values) throws JSONException {
+		this(values.getString(ESTACION), values.getString(RAMAL), values
+				.getInt(ALERT_MINUTES));
 	}
 
 	public static TrainAlert getTrainAlert(Bundle bundle) {
@@ -88,5 +100,23 @@ public class TrainAlert {
 		str.append(this.alertMinutes);
 		str.append(" mins");
 		return str.toString();
+	}
+
+	public JSONObject toJson() {
+		JSONStringer builder = new JSONStringer();
+		try {
+			builder.object();
+			builder.key(RAMAL);
+			builder.value(this.ramal.toString());
+			builder.key(ESTACION);
+			builder.value(this.estacion.toString());
+			builder.key(ALERT_MINUTES);
+			builder.value(this.alertMinutes);
+			builder.endObject();
+			String json = builder.toString();
+			return (JSONObject) (new JSONTokener(json)).nextValue();
+		} catch (JSONException e) {
+			return null;
+		}
 	}
 }

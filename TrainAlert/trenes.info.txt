@@ -7,3 +7,13 @@ key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ
 
 key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ
 http://trenes.mininterior.gov.ar/v2_pg/arribos/ajax_arribos.php?ramal=5&rnd=mLbJm8Z19IX7Zhka&key=v%23v%23QTUtWp%23MpWRy80Q0knTE10I30kj%23FNyZ
+
+hay que agregar referer en el header Referer http://trenes.mininterior.gov.ar/v2_pg/arribos/index.php?ramal=5 sino rebota la consulta
+
+create rules
+read train line informations
+
+write rules
+	line, from, to, stop, urlQuery
+
+read rules

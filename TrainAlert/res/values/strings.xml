@@ -12,5 +12,8 @@
     <string name="SET_ALERT">Setear Alerta</string>
     <string name="title_activity_store_test">Store Test</string>
     <string name="store_test_button">do something</string>
+    <string name="save_data_button">SAVE</string>
+    <string name="show_data_button">SHOW</string>
+    <string name="alerts_hint">Input Hint</string>
 
 </resources>
