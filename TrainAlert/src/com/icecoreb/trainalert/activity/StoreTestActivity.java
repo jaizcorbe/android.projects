@@ -2,12 +2,14 @@ package com.icecoreb.trainalert.activity;
 
 import java.util.List;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.icecoreb.trainalert.R;
@@ -50,8 +52,32 @@ public class StoreTestActivity extends Activity {
 	}
 
 	private String loadTrainLinesData() {
-		List<JSONObject> trainLinesData = (new TrainAlertDataStore(this)).getTrainLines();
-		return trainLinesData.isEmpty() ? "no data" : trainLinesData.get(0).toString();
+		List<JSONObject> trainLinesData = (new TrainAlertDataStore(this))
+				.getTrainLines();
+		return trainLinesData.isEmpty() ? "no data" : trainLinesData.get(0)
+				.toString();
+	}
+
+	public void showData(View view) {
+		TextView textView = (TextView) this.findViewById(R.id.alertsOutput);
+		List<JSONObject> trainAlertsData = (new TrainAlertDataStore(this))
+				.getTrainAlerts();
+		String data = trainAlertsData.isEmpty() ? "no alerts" : trainAlertsData
+				.get(0).toString();
+		textView.setText(data);
+	}
+
+	public void saveData(View view) {
+		TextView textView = (TextView) this.findViewById(R.id.alertsInput);
+		JSONObject obj = new JSONObject();
+		CharSequence value = textView.getText();
+
+		try {
+			obj.put("ALERT", value);
+			(new TrainAlertDataStore(this)).storeTrainAlert(obj);
+		} catch (JSONException e) {
+			// TODO do something
+		}
 	}
 
 }
